@@ -1,0 +1,464 @@
+/* Airport wayfinding: a dark signage band, and sign yellow reserved for
+   "you are here" (current step) and "go" (primary action). */
+:root {
+  --ink: #1d2433;
+  --paper: #f4f6f9;
+  --surface: #ffffff;
+  --muted: #566070;
+  --line: #d3d9e2;
+  --sign: #ffc20e;
+  --sign-ink: #1d2433;
+  --band: #1d2433;
+  --band-text: #f4f6f9;
+  --band-muted: #9aa4b5;
+  --focus: #1f5fbf;
+  --error: #b42318;
+
+  color-scheme: light dark;
+  font:
+    17px/1.5 'Atkinson Hyperlegible',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e7ebf2;
+    --paper: #121721;
+    --surface: #1b2230;
+    --muted: #9aa4b5;
+    --line: #2f3848;
+    --band: #222b3b;
+    --focus: #8ab4ff;
+    --error: #ff8a80;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+}
+
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- signage band ------------------------------------------------------ */
+
+.masthead {
+  background: var(--band);
+  color: var(--band-text);
+}
+
+.masthead-inner {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 1rem 1rem 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step-link,
+.step-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.35rem;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.step-label {
+  color: var(--band-muted);
+}
+
+.step-link {
+  border: 0;
+  background: none;
+  color: var(--band-text);
+  cursor: pointer;
+}
+.step-link:hover {
+  background: rgb(255 255 255 / 0.08);
+}
+
+.step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 4px;
+  border: 1.5px solid currentColor;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.step-current .step-label {
+  background: var(--sign);
+  color: var(--sign-ink);
+  font-weight: 700;
+}
+.step-current .step-number {
+  background: var(--sign-ink);
+  border-color: var(--sign-ink);
+  color: var(--sign);
+}
+
+/* --- page and forms ---------------------------------------------------- */
+
+.container {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem 4rem;
+}
+
+.step {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.step-heading {
+  margin: 0;
+  font-size: 1.95rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.step-heading:focus {
+  outline: none;
+}
+
+.trip-summary {
+  margin-top: -0.75rem;
+  color: var(--muted);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem 1rem;
+}
+
+@media (max-width: 34rem) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+  align-content: start;
+}
+
+.field label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.field-hint {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.field-error {
+  color: var(--error);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+input,
+select,
+button {
+  font: inherit;
+  color: inherit;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.field input:not([aria-invalid='true']):hover,
+.field select:not([aria-invalid='true']):hover {
+  border-color: var(--muted);
+}
+.field [aria-invalid='true'] {
+  border-color: var(--error);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.button-primary,
+.button-secondary {
+  min-height: 2.75rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button-primary {
+  border: 1.5px solid var(--sign);
+  background: var(--sign);
+  color: var(--sign-ink);
+}
+.button-primary:hover {
+  filter: brightness(0.95);
+}
+
+.button-secondary {
+  border: 1.5px solid var(--line);
+  background: transparent;
+}
+.button-secondary:hover {
+  border-color: var(--muted);
+}
+
+/* --- results ----------------------------------------------------------- */
+
+.controls {
+  padding-bottom: 1.25rem;
+  border-bottom: 1.5px solid var(--line);
+}
+
+.notice {
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 1.5px dashed var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+}
+.notice-error {
+  border-style: solid;
+  border-color: var(--error);
+  color: var(--ink);
+}
+
+.result-count {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.passes {
+  display: grid;
+  gap: 0.75rem;
+  margin: -0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A boarding pass: details on the left, a perforated stub with the fare on the right. */
+.pass {
+  --notch: 0.6rem;
+  position: relative;
+  display: grid;
+  /* Fixed stub width keeps the perforation aligned across passes. */
+  grid-template-columns: 1fr 9rem;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.pass-body {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 1rem 1.25rem;
+}
+
+.pass-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pass-time {
+  font-size: 1.55rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.pass-duration {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.pass-route {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+}
+
+.route-line {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 1rem;
+  background: linear-gradient(var(--line), var(--line)) center / 100% 1.5px no-repeat;
+}
+
+.route-plane {
+  width: 1rem;
+  height: 1rem;
+  padding: 0 0.15rem;
+  box-sizing: content-box;
+  fill: var(--ink);
+  background: var(--surface);
+  transform: rotate(90deg);
+}
+
+.pass-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.stars {
+  letter-spacing: 0.1em;
+}
+.stars-filled {
+  color: #c98a00;
+}
+.stars-empty {
+  color: var(--line);
+}
+
+@media (prefers-color-scheme: dark) {
+  .stars-filled {
+    color: var(--sign);
+  }
+}
+
+.pass-stub {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 1rem 0.5rem;
+  border-left: 1.5px dashed var(--line);
+}
+
+/* Punched notches where the perforation meets the edges. */
+.pass-stub::before,
+.pass-stub::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--notch) * -1 - 0.75px);
+  width: calc(var(--notch) * 2);
+  height: var(--notch);
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+}
+.pass-stub::before {
+  top: -1.5px;
+  border-top: 0;
+  border-radius: 0 0 var(--notch) var(--notch);
+}
+.pass-stub::after {
+  bottom: -1.5px;
+  border-bottom: 0;
+  border-radius: var(--notch) var(--notch) 0 0;
+}
+
+.pass-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Phones: the stub tears off below the details, with the notches on the sides. */
+@media (max-width: 30rem) {
+  .pass {
+    grid-template-columns: 1fr;
+  }
+  .pass-body {
+    padding: 0.9rem 1rem;
+  }
+  .pass-stub {
+    place-items: center start;
+    padding: 0.6rem 1rem 0.75rem;
+    border-left: 0;
+    border-top: 1.5px dashed var(--line);
+  }
+  .pass-stub::before,
+  .pass-stub::after {
+    top: calc(var(--notch) * -1 - 0.75px);
+    bottom: auto;
+    width: var(--notch);
+    height: calc(var(--notch) * 2);
+    border: 1.5px solid var(--line);
+  }
+  .pass-stub::before {
+    left: -1.5px;
+    border-left: 0;
+    border-radius: 0 var(--notch) var(--notch) 0;
+  }
+  .pass-stub::after {
+    left: auto;
+    right: -1.5px;
+    border-right: 0;
+    border-radius: var(--notch) 0 0 var(--notch);
+  }
+}

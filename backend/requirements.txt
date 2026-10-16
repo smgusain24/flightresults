@@ -1,0 +1,6 @@
+fastapi[standard]==0.143.2
+psycopg[binary,pool]==3.3.6
+psycopg-pool==3.3.3
+pydantic-settings==2.16.0
+pytest==9.1.1
+httpx2==2.13.1
